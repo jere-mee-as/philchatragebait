@@ -164,6 +164,23 @@ button:focus-visible{outline:1.5px solid var(--ink);outline-offset:2px}
 .pill:hover .dn-b,.trigger:hover .dn-b,.list li:hover .dn-b,.list li.act .dn-b{opacity:1;filter:none}
 .pill:hover .av img.alt,.trigger:hover .av img.alt,.list li:hover .av img.alt,.list li.act .av img.alt{opacity:1}
 @media (hover:none){.trigger:hover .dn-a,.list li.act .dn-a{opacity:1;filter:none}.trigger:hover .dn-b,.list li.act .dn-b{opacity:0}.trigger:hover .av img.alt,.list li.act .av img.alt{opacity:0}}
+
+/* Who are you on laptops: wider, tighter grid so all faces fit without scrolling */
+@media (min-width:900px){
+  body:not(.on-gen){padding-block:40px 40px}
+  body:not(.on-gen) .wrap{max-width:920px}
+  body:not(.on-gen) header{margin-bottom:36px}
+  body:not(.on-gen) .who-h{margin-bottom:28px}
+  body:not(.on-gen) .grid{grid-template-columns:repeat(8,minmax(0,1fr));gap:14px 8px}
+  body:not(.on-gen) .pill{gap:8px;padding:6px 2px}
+}
+@media (min-width:900px) and (max-height:700px){
+  body:not(.on-gen){padding-block:24px 24px}
+  body:not(.on-gen) header{margin-bottom:20px}
+  body:not(.on-gen) .who-h{margin-bottom:18px;font-size:26px}
+  body:not(.on-gen) .pill .av.s56{width:44px;height:44px}
+  body:not(.on-gen) .grid{gap:8px 8px}
+}
 @media (max-width:560px){
   .picker{flex-basis:100%}
   .others{margin:-2px 0 0 60px}
