@@ -64,19 +64,19 @@ body.on-gen .mark{font:400 15px var(--sans);color:var(--muted)}.mark .gen{opacit
 .pill:hover{background:var(--hover-soft);color:var(--ink)}
 .pill:hover .av{transform:scale(1.05)}
 @keyframes rise{to{opacity:1;transform:none}}
-.leaving .pill{animation:out .42s cubic-bezier(.4,0,.6,1) forwards!important}
+.leaving .pill{animation:out .32s cubic-bezier(.4,0,.6,1) forwards!important}
 @keyframes out{to{opacity:0;transform:translateY(-4px) scale(.985);filter:blur(2px)}}
 /* screen switch: everything eases out together, the layout changes while it's invisible, then the next screen settles in piece by piece */
-header,.who-h{transition:opacity .42s cubic-bezier(.4,0,.6,1),filter .42s}
+header,.who-h{transition:opacity .32s cubic-bezier(.4,0,.6,1),filter .32s}
 .wrap.swapping header,.wrap.swapping .who-h{opacity:0;filter:blur(2px)}
-#gen.leaving{animation:genout .42s cubic-bezier(.4,0,.6,1) forwards}
+#gen.leaving{animation:genout .32s cubic-bezier(.4,0,.6,1) forwards}
 @keyframes genout{to{opacity:0;transform:translateY(-4px);filter:blur(2px)}}
-#gen.enter>.top,#gen.enter>.line,#gen.enter>.mid,#gen.enter>.foot{opacity:0;animation:settle .9s cubic-bezier(.2,.7,.2,1) forwards}
-#gen.enter>.line{animation-delay:.14s}
-#gen.enter>.mid{animation-delay:.26s}
-#gen.enter>.foot{animation-delay:.34s}
+#gen.enter>.top,#gen.enter>.line,#gen.enter>.mid,#gen.enter>.foot{opacity:0;animation:settle .7s cubic-bezier(.2,.7,.2,1) forwards}
+#gen.enter>.line{animation-delay:.1s}
+#gen.enter>.mid{animation-delay:.19s}
+#gen.enter>.foot{animation-delay:.25s}
 @keyframes settle{from{opacity:0;transform:translateY(10px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
-#who.enter .who-h{animation:settle .8s cubic-bezier(.2,.7,.2,1)}
+#who.enter .who-h{animation:settle .6s cubic-bezier(.2,.7,.2,1)}
 .who-skip{margin-top:28px;align-self:center}
 
 /* ---------- Generator ---------- */
@@ -363,12 +363,12 @@ function pickMe(id){
   me = id;
   if(id === 'watcher'){ unlocked = true; store.set('unlocked', true); }
   $('grid').classList.add('leaving'); $('wrapper').classList.add('swapping');
-  setTimeout(startGen, reduced ? 0 : 420);
+  setTimeout(startGen, reduced ? 0 : 320);
 }
 $('home').onclick = e => {
   e.preventDefault(); if($('gen').hidden) return;
   closePicker(); $('gen').classList.add('leaving'); $('wrapper').classList.add('swapping');
-  setTimeout(() => { $('gen').classList.remove('leaving'); showWho(); requestAnimationFrame(() => $('wrapper').classList.remove('swapping')); }, reduced ? 0 : 420);
+  setTimeout(() => { $('gen').classList.remove('leaving'); showWho(); requestAnimationFrame(() => $('wrapper').classList.remove('swapping')); }, reduced ? 0 : 320);
 };
 
 /* Generator */
@@ -376,7 +376,7 @@ function startGen(){
   $('who').hidden = true; $('gen').hidden = false; $('copy').hidden = false; setMark(true);
   pulls = 0; unlocked = false;
   const g = $('gen'); g.classList.remove('enter'); void g.offsetWidth; g.classList.add('enter');
-  setTimeout(() => g.classList.remove('enter'), 1400);
+  setTimeout(() => g.classList.remove('enter'), 1100);
   requestAnimationFrame(() => requestAnimationFrame(() => $('wrapper').classList.remove('swapping')));
   setTarget(isPlayer() ? byU[me] : 'any', false);
   applyUnlock(false); go();
