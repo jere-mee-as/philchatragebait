@@ -471,7 +471,7 @@ function renderList(q='', stagger=false){
   setAct(items.length ? 0 : -1);
 }
 function setAct(i){ items.forEach(x=>x.classList.remove('act')); act = i; if(items[i]){ items[i].classList.add('act'); items[i].scrollIntoView({block:'nearest'}); } }
-function openPicker(stagger=false){ if(!canPick()) return; picker.classList.add('open'); trigger.setAttribute('aria-expanded','true'); search.value=''; renderList('', stagger); if(!stagger) setTimeout(()=>search.focus(), 30); }
+function openPicker(stagger=false){ if(!canPick()) return; picker.classList.add('open'); trigger.setAttribute('aria-expanded','true'); search.value=''; renderList('', stagger); if(!stagger && matchMedia('(hover:hover) and (pointer:fine)').matches) setTimeout(()=>search.focus(), 30); }
 function closePicker(){ picker.classList.remove('open'); trigger.setAttribute('aria-expanded','false'); }
 trigger.onclick = () => picker.classList.contains('open') ? closePicker() : openPicker();
 $('others').onclick = e => { e.stopPropagation(); openPicker(); };
