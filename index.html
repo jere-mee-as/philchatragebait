@@ -80,6 +80,7 @@ body.on-gen .mark{font:400 15px var(--sans);color:var(--muted)}.mark .gen{opacit
 .trigger .chev.breathe{animation:breathe 1.5s ease-in-out}
 @keyframes breathe{0%,100%{transform:none;color:var(--muted)}30%{transform:scale(1.45);color:var(--ink)}55%{transform:scale(1.05)}75%{transform:scale(1.3);color:var(--ink)}}
 .anyav{min-width:52px;height:52px;display:flex;align-items:center;flex:none}
+.anyav .stack .av+.av{margin-left:-24px}
 .pop{position:absolute;left:-6px;right:-6px;top:calc(100% + 8px);z-index:20;background:var(--pop);border-radius:14px;box-shadow:var(--shadow);padding:6px;
   opacity:0;transform:translateY(-4px) scale(.985);transform-origin:top center;pointer-events:none;transition:opacity .18s,transform .18s}
 .picker.open .pop{opacity:1;transform:none;pointer-events:auto}
@@ -306,7 +307,7 @@ function startGen(){
 function setTarget(t, run=true){
   target = t; hist = []; hi = -1;
   const tav = $('tav'); tav.innerHTML = '';
-  if(t === 'any'){ const w = document.createElement('span'); w.className = 'anyav'; w.appendChild(stackOf(shuf(order).slice(0,3),'s28')); tav.appendChild(w); $('tname').textContent = 'Anyone'; }
+  if(t === 'any'){ const w = document.createElement('span'); w.className = 'anyav'; w.appendChild(stackOf(shuf(order).slice(0,3),'s56')); tav.appendChild(w); $('tname').textContent = 'Anyone'; }
   else { tav.appendChild(avatar(t,'s56')); $('tname').textContent = P[t].n; }
   if(run) go();
 }
