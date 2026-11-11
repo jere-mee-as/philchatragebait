@@ -19,6 +19,12 @@
   --bg:#0b0b0c; --ink:#ececee; --soft:#b0b0b8; --muted:#76767e; --line:#222226; --hover:#17171a; --hover-soft:#121214; --fill:#131315; --pop:#141416; --ring:#202024;
   --shadow:0 16px 40px -12px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06); --rage:#ff6a57; color-scheme:dark;}
 *{box-sizing:border-box}
+/* phones: no blue tap flash, a soft grey press instead */
+*{-webkit-tap-highlight-color:transparent}
+.pill:active,.trigger.can:active,.list li:active,.others:active,.textbtn:active,.icon:active,.mark:active{background:var(--hover-soft)}
+.react:active,.back:active{background:var(--fill)}
+.mark{-webkit-touch-callout:none}
+button:focus:not(:focus-visible),a:focus:not(:focus-visible),[tabindex]:focus:not(:focus-visible){outline:none}
 body{background:var(--bg);color:var(--ink);font:400 14px/1.5 var(--sans);transition:background-color .4s,color .4s;
   padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-block:64px 96px}
 .wrap{max-width:540px;margin:0 auto;display:flex;flex-direction:column}
