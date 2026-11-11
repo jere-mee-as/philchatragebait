@@ -261,7 +261,7 @@ function avatar(pi, size){
 }
 function stackOf(ids, size){ const st = document.createElement('span'); st.className = 'stack'; ids.forEach(i=>st.appendChild(avatar(i,size))); return st; }
 
-let me = store.get('me');
+let me = null; store.del('me');
 let pulls = store.get('pulls') || 0;
 let unlocked = !!store.get('unlocked');
 let target = null, current = null;
@@ -280,7 +280,7 @@ function showWho(){
   });
 }
 function pickMe(id){
-  me = id; store.set('me', id);
+  me = id;
   if(id === 'watcher'){ unlocked = true; store.set('unlocked', true); }
   $('grid').classList.add('leaving');
   setTimeout(startGen, reduced ? 0 : 300);
@@ -433,7 +433,7 @@ try { const s = localStorage.getItem('rb-theme'); if(s) root.dataset.theme = s; 
 $('theme').onclick = () => { const n = isDark() ? 'light' : 'dark'; root.dataset.theme = n; try{ localStorage.setItem('rb-theme', n) }catch(e){} };
 
 if(byU['jere.mi.as'] !== undefined){ const c = $('credit'); c.insertBefore(avatar(byU['jere.mi.as'],'s20'), c.querySelector('b')); }
-if(me && (me === 'watcher' || isPlayer())) startGen(); else showWho();
+showWho();
 </script>
 
 </body></html>
