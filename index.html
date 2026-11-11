@@ -64,12 +64,22 @@ body.on-gen .mark{font:400 15px var(--sans);color:var(--muted)}.mark .gen{opacit
 .pill:hover{background:var(--hover-soft);color:var(--ink)}
 .pill:hover .av{transform:scale(1.05)}
 @keyframes rise{to{opacity:1;transform:none}}
-.leaving .pill{animation:out .3s ease-in forwards!important}
-@keyframes out{to{opacity:0;transform:translateY(-6px)}}
+.leaving .pill{animation:out .42s cubic-bezier(.4,0,.6,1) forwards!important}
+@keyframes out{to{opacity:0;transform:translateY(-4px) scale(.985);filter:blur(2px)}}
+/* screen switch: everything eases out together, the layout changes while it's invisible, then the next screen settles in piece by piece */
+header,.who-h{transition:opacity .42s cubic-bezier(.4,0,.6,1),filter .42s}
+.wrap.swapping header,.wrap.swapping .who-h{opacity:0;filter:blur(2px)}
+#gen.leaving{animation:genout .42s cubic-bezier(.4,0,.6,1) forwards}
+@keyframes genout{to{opacity:0;transform:translateY(-4px);filter:blur(2px)}}
+#gen.enter>.top,#gen.enter>.line,#gen.enter>.mid,#gen.enter>.foot{opacity:0;animation:settle .9s cubic-bezier(.2,.7,.2,1) forwards}
+#gen.enter>.line{animation-delay:.14s}
+#gen.enter>.mid{animation-delay:.26s}
+#gen.enter>.foot{animation-delay:.34s}
+@keyframes settle{from{opacity:0;transform:translateY(10px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+#who.enter .who-h{animation:settle .8s cubic-bezier(.2,.7,.2,1)}
 .who-skip{margin-top:28px;align-self:center}
 
 /* ---------- Generator ---------- */
-.gen{animation:in .5s cubic-bezier(.2,.7,.2,1)}
 @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .picker{position:relative;flex:1;min-width:0}
@@ -213,7 +223,7 @@ button:focus-visible{outline:1.5px solid var(--ink);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.pill,.list li.fresh{opacity:1;transform:none}}
 </style>
 
-<div class="wrap">
+<div class="wrap" id="wrapper">
   <header>
     <a class="mark" id="home" href="#" aria-label="Philchat Rage Bait Generator, back to Who are you?"><b>Philchat</b> Rage Bait <span class="gen">Generator</span></a>
     <div class="actions">
@@ -339,6 +349,7 @@ function setMark(gen){
 /* Who are you */
 function showWho(){
   $('gen').hidden = true; $('who').hidden = false; $('copy').hidden = true; setMark(false);
+  const w = $('who'); w.classList.remove('enter'); void w.offsetWidth; w.classList.add('enter');
   const g = $('grid'); g.innerHTML = ''; g.classList.remove('leaving');
   order.forEach((pi, n) => {
     const b = document.createElement('button'); b.className = 'pill'; b.style.animationDelay = (n*18) + 'ms';
@@ -351,16 +362,22 @@ function showWho(){
 function pickMe(id){
   me = id;
   if(id === 'watcher'){ unlocked = true; store.set('unlocked', true); }
-  $('grid').classList.add('leaving');
-  setTimeout(startGen, reduced ? 0 : 300);
+  $('grid').classList.add('leaving'); $('wrapper').classList.add('swapping');
+  setTimeout(startGen, reduced ? 0 : 420);
 }
-$('home').onclick = e => { e.preventDefault(); if(!$('gen').hidden){ closePicker(); showWho(); } };
+$('home').onclick = e => {
+  e.preventDefault(); if($('gen').hidden) return;
+  closePicker(); $('gen').classList.add('leaving'); $('wrapper').classList.add('swapping');
+  setTimeout(() => { $('gen').classList.remove('leaving'); showWho(); requestAnimationFrame(() => $('wrapper').classList.remove('swapping')); }, reduced ? 0 : 420);
+};
 
 /* Generator */
 function startGen(){
   $('who').hidden = true; $('gen').hidden = false; $('copy').hidden = false; setMark(true);
   pulls = 0; unlocked = false;
-  const g = $('gen'); g.style.animation = 'none'; void g.offsetWidth; g.style.animation = '';
+  const g = $('gen'); g.classList.remove('enter'); void g.offsetWidth; g.classList.add('enter');
+  setTimeout(() => g.classList.remove('enter'), 1400);
+  requestAnimationFrame(() => requestAnimationFrame(() => $('wrapper').classList.remove('swapping')));
   setTarget(isPlayer() ? byU[me] : 'any', false);
   applyUnlock(false); go();
 }
