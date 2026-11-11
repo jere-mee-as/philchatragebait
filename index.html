@@ -27,15 +27,15 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;ma
 .mark:hover{opacity:.7}
 .mark:focus-visible{outline:1.5px solid var(--ink);outline-offset:3px}
 .mark b{font-weight:500;color:var(--ink)}
-.mark{white-space:nowrap}.mark .gen{opacity:.6}
+.mark{white-space:nowrap}
+body.on-gen header{margin-bottom:22px}
+body.on-gen .mark{font:400 15px var(--sans);color:var(--muted)}.mark .gen{opacity:.6}
 .actions{display:flex;align-items:center;gap:4px}
 .icon{width:34px;height:34px;border-radius:50%;border:0;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:color .2s,background-color .2s}
 .icon:hover{color:var(--ink);background:var(--hover)}
 .icon svg{width:16px;height:16px}
 .textbtn{font:400 13px var(--sans);color:var(--muted);background:transparent;border:0;cursor:pointer;padding:8px 10px;border-radius:999px}
 .textbtn:hover{color:var(--ink);background:var(--hover)}
-.notme{margin-right:auto;margin-left:-10px;max-width:55vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.notme:not([hidden]){animation:in .5s cubic-bezier(.2,.7,.2,1)}
 .screen[hidden]{display:none!important}
 
 .av{position:relative;flex:none;border-radius:50%;background:var(--ring);overflow:hidden;display:grid;place-items:center;color:var(--muted);font-weight:500}
@@ -77,6 +77,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;ma
 .trigger .chev{margin-left:auto;width:17px;height:17px;color:var(--muted);flex:none;opacity:0;transform:translateY(-4px);transition:opacity .5s,transform .5s}
 .trigger.can .chev{opacity:1;transform:none}
 .picker.open .chev{transform:rotate(180deg)}
+.trigger .chev.breathe{animation:breathe 1.5s ease-in-out}
+@keyframes breathe{0%,100%{transform:none;color:var(--muted)}30%{transform:scale(1.45);color:var(--ink)}55%{transform:scale(1.05)}75%{transform:scale(1.3);color:var(--ink)}}
 .anyav{min-width:52px;height:52px;display:flex;align-items:center;flex:none}
 .pop{position:absolute;left:-6px;right:-6px;top:calc(100% + 8px);z-index:20;background:var(--pop);border-radius:14px;box-shadow:var(--shadow);padding:6px;
   opacity:0;transform:translateY(-4px) scale(.985);transform-origin:top center;pointer-events:none;transition:opacity .18s,transform .18s}
@@ -205,7 +207,6 @@ button:focus-visible{outline:1.5px solid var(--ink);outline-offset:2px}
       </div>
     </div>
     <div class="foot">
-      <button class="textbtn notme" id="notme" hidden>Not you?</button>
       <button class="back" id="back" aria-label="Previous line" title="Previous line">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.64-6.36"/><path d="M3 3v6h6"/></svg>
       </button>
@@ -262,14 +263,21 @@ function avatar(pi, size){
 function stackOf(ids, size){ const st = document.createElement('span'); st.className = 'stack'; ids.forEach(i=>st.appendChild(avatar(i,size))); return st; }
 
 let me = null; store.del('me');
-let pulls = store.get('pulls') || 0;
-let unlocked = !!store.get('unlocked');
+let pulls = 0, unlocked = false; store.del('pulls'); store.del('unlocked');
 let target = null, current = null;
 const isPlayer = () => byU[me] !== undefined;
 
+/* header: the site name on the front page; on the generator it reads into the name below */
+function setMark(gen){
+  const m = $('home');
+  m.innerHTML = gen ? '<b>Rage bait</b> for…' : '<b>Philchat</b> Rage Bait <span class="gen">Generator</span>';
+  m.setAttribute('aria-label', gen ? 'Rage bait for the person below. Back to Who are you?' : 'Philchat Rage Bait Generator');
+  document.body.classList.toggle('on-gen', gen);
+}
+
 /* Who are you */
 function showWho(){
-  $('gen').hidden = true; $('who').hidden = false; $('copy').hidden = true; $('notme').hidden = true;
+  $('gen').hidden = true; $('who').hidden = false; $('copy').hidden = true; setMark(false);
   const g = $('grid'); g.innerHTML = ''; g.classList.remove('leaving');
   order.forEach((pi, n) => {
     const b = document.createElement('button'); b.className = 'pill'; b.style.animationDelay = (n*18) + 'ms';
@@ -285,13 +293,12 @@ function pickMe(id){
   $('grid').classList.add('leaving');
   setTimeout(startGen, reduced ? 0 : 300);
 }
-$('notme').onclick = () => { closePicker(); showWho(); };
 $('home').onclick = e => { e.preventDefault(); if(!$('gen').hidden){ closePicker(); showWho(); } };
 
 /* Generator */
 function startGen(){
-  $('who').hidden = true; $('gen').hidden = false; $('copy').hidden = false;
-  const nm = $('notme'); nm.hidden = !isPlayer(); if(isPlayer()){ const p = P[byU[me]]; nm.textContent = 'Not ' + (p.s || p.n) + '?'; nm.title = 'Pick who you are again'; }
+  $('who').hidden = true; $('gen').hidden = false; $('copy').hidden = false; setMark(true);
+  pulls = 0; unlocked = false;
   const g = $('gen'); g.style.animation = 'none'; void g.offsetWidth; g.style.animation = '';
   setTarget(isPlayer() ? byU[me] : 'any', false);
   applyUnlock(false); go();
@@ -303,7 +310,7 @@ function setTarget(t, run=true){
   else { tav.appendChild(avatar(t,'s56')); $('tname').textContent = P[t].n; }
   if(run) go();
 }
-const canPick = () => !isPlayer() || unlocked;
+const canPick = () => true;
 function applyUnlock(justNow){
   const trig = $('trigger'), others = $('others');
   trig.classList.toggle('can', canPick());
@@ -316,14 +323,14 @@ function applyUnlock(justNow){
     others.classList.add('show');
   }
   if(justNow){
-    if(cfg.unlock === '1'){ const av = $('tav').firstChild; if(av){ av.classList.remove('ringpulse'); void av.offsetWidth; av.classList.add('ringpulse'); } }
+    const ch = $('trigger').querySelector('.chev'); if(ch){ ch.classList.remove('breathe'); void ch.getBoundingClientRect(); ch.classList.add('breathe'); }
     if(cfg.unlock === '3'){ setTimeout(() => openPicker(true), reduced ? 0 : 450); }
   }
 }
 function countPull(){
-  if(unlocked || !isPlayer()) return;
-  pulls++; store.set('pulls', pulls);
-  if(pulls >= UNLOCK_AFTER){ unlocked = true; store.set('unlocked', true); applyUnlock(true); }
+  if(unlocked) return;
+  pulls++;
+  if(pulls >= UNLOCK_AFTER){ unlocked = true; applyUnlock(true); }
 }
 
 let rot = 0;
