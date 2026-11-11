@@ -29,6 +29,9 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;ma
 .mark b{font-weight:500;color:var(--ink)}
 .mark{white-space:nowrap}
 body.on-gen header{margin-bottom:22px}
+.mark.fade{animation:markin .9s cubic-bezier(.2,.7,.2,1)}
+@keyframes markin{from{opacity:0;filter:blur(2px);transform:translateY(3px)}to{opacity:1;filter:none;transform:none}}
+body.on-gen .mark.fade{animation-duration:1.1s}
 body.on-gen .mark{font:400 15px var(--sans);color:var(--muted)}.mark .gen{opacity:.6}
 .actions{display:flex;align-items:center;gap:4px}
 .icon{width:34px;height:34px;border-radius:50%;border:0;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:color .2s,background-color .2s}
@@ -272,6 +275,7 @@ const isPlayer = () => byU[me] !== undefined;
 function setMark(gen){
   const m = $('home');
   m.innerHTML = gen ? '<b>Rage bait</b> for…' : '<b>Philchat</b> Rage Bait <span class="gen">Generator</span>';
+  m.classList.remove('fade'); void m.offsetWidth; m.classList.add('fade');
   m.setAttribute('aria-label', gen ? 'Rage bait for the person below. Back to Who are you?' : 'Philchat Rage Bait Generator');
   document.body.classList.toggle('on-gen', gen);
 }
