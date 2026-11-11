@@ -34,6 +34,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;ma
 .icon svg{width:16px;height:16px}
 .textbtn{font:400 13px var(--sans);color:var(--muted);background:transparent;border:0;cursor:pointer;padding:8px 10px;border-radius:999px}
 .textbtn:hover{color:var(--ink);background:var(--hover)}
+.notme{margin-right:auto;margin-left:-10px;max-width:55vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notme:not([hidden]){animation:in .5s cubic-bezier(.2,.7,.2,1)}
 .screen[hidden]{display:none!important}
 
 .av{position:relative;flex:none;border-radius:50%;background:var(--ring);overflow:hidden;display:grid;place-items:center;color:var(--muted);font-weight:500}
@@ -203,6 +205,7 @@ button:focus-visible{outline:1.5px solid var(--ink);outline-offset:2px}
       </div>
     </div>
     <div class="foot">
+      <button class="textbtn notme" id="notme" hidden>Not you?</button>
       <button class="back" id="back" aria-label="Previous line" title="Previous line">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.64-6.36"/><path d="M3 3v6h6"/></svg>
       </button>
@@ -266,7 +269,7 @@ const isPlayer = () => byU[me] !== undefined;
 
 /* Who are you */
 function showWho(){
-  $('gen').hidden = true; $('who').hidden = false; $('copy').hidden = true;
+  $('gen').hidden = true; $('who').hidden = false; $('copy').hidden = true; $('notme').hidden = true;
   const g = $('grid'); g.innerHTML = ''; g.classList.remove('leaving');
   order.forEach((pi, n) => {
     const b = document.createElement('button'); b.className = 'pill'; b.style.animationDelay = (n*18) + 'ms';
@@ -282,12 +285,13 @@ function pickMe(id){
   $('grid').classList.add('leaving');
   setTimeout(startGen, reduced ? 0 : 300);
 }
-/* "I'm just watching" removed */
+$('notme').onclick = () => { closePicker(); showWho(); };
 $('home').onclick = e => { e.preventDefault(); if(!$('gen').hidden){ closePicker(); showWho(); } };
 
 /* Generator */
 function startGen(){
   $('who').hidden = true; $('gen').hidden = false; $('copy').hidden = false;
+  const nm = $('notme'); nm.hidden = !isPlayer(); if(isPlayer()){ const p = P[byU[me]]; nm.textContent = 'Not ' + (p.s || p.n) + '?'; nm.title = 'Pick who you are again'; }
   const g = $('gen'); g.style.animation = 'none'; void g.offsetWidth; g.style.animation = '';
   setTarget(isPlayer() ? byU[me] : 'any', false);
   applyUnlock(false); go();
