@@ -175,7 +175,6 @@ button:focus-visible{outline:1.5px solid var(--ink);outline-offset:2px}
   <section class="screen" id="who">
     <h1 class="who-h">Who are you?</h1>
     <div class="grid" id="grid"></div>
-    <button class="textbtn who-skip" id="skip">I'm just watching</button>
   </section>
 
   <section class="screen gen" id="gen" hidden>
@@ -284,7 +283,7 @@ function pickMe(id){
   $('grid').classList.add('leaving');
   setTimeout(startGen, reduced ? 0 : 300);
 }
-$('skip').onclick = () => pickMe('watcher');
+/* "I'm just watching" removed */
 $('home').onclick = e => { e.preventDefault(); if(!$('gen').hidden){ closePicker(); showWho(); } };
 
 /* Generator */
